@@ -5,11 +5,13 @@
 #include <strings.h>
 
 #include "coap.h"
+#include "debug.h"
 
 #define PORT 5683
 
 int main(int argc, char **argv)
 {
+    PDEBUG("xoxoxoxoxo\n");
     int fd;
     struct sockaddr_in servaddr, cliaddr;
     uint8_t buf[4096];
