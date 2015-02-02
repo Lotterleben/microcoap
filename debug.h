@@ -1,5 +1,6 @@
 #ifndef COAP_DEBUG_H
 #define COAP_DEBUG_H 1
+#include <stdio.h>
 
 #ifdef DEBUG
 #define PDEBUG(...) \
