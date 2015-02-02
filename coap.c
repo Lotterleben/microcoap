@@ -428,8 +428,14 @@ int coap_handle_req(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_
              * (The code field denotes either the request method or a response code.)*/
             goto next;
         }
+        /* Since Uri-path options are used to specify the target resource, 
+         * check if the incoming packet has any and compare them one by one to
+         * the endpoint's path.
+         */
         if (NULL != (opt = coap_findOptions(inpkt, COAP_OPTION_URI_PATH, &count)))
         {
+            PDEBUG("[coap.c]     packet has %d options.\n", count);
+
             if (count != ep->path->count)
                 goto next;
             for (i=0;i<count;i++)
