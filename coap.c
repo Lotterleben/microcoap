@@ -445,7 +445,6 @@ int coap_handle_req(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_
                 if (0 != memcmp(ep->path->elems[i], opt[i].buf.p, opt[i].buf.len))
                     goto next;
             }
-            // match!
             PDEBUG("[coap.c]     found matching endpoint, calling handler.\n");
             return ep->handler(scratch, inpkt, outpkt, inpkt->hdr.id[0], inpkt->hdr.id[1]);
         }

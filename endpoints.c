@@ -36,8 +36,20 @@ static const coap_endpoint_path_t path_light = {1, {"light"}};
 static int handle_get_light(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_packet_t *outpkt, uint8_t id_hi, uint8_t id_lo)
 {
     PDEBUG("[endpoints]  %s()\n",  __func__);
-    return coap_make_response(scratch, outpkt, (const uint8_t *)&light, 1, id_hi, id_lo, &inpkt->tok, COAP_RSPCODE_CONTENT, COAP_CONTENTTYPE_TEXT_PLAIN);
+    return coap_make_response(scratch, outpkt, 
+                              (const uint8_t *)&light, 1, id_hi, id_lo, &inpkt->tok, COAP_RSPCODE_CONTENT, COAP_CONTENTTYPE_TEXT_PLAIN);
 }
+
+////////////////////////////////////////////////////////////////////////////////
+static const coap_endpoint_path_t path_iop = {2, {"plant", "humidity"}};
+static int handle_get_humidity(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_packet_t *outpkt, uint8_t id_hi, uint8_t id_lo)
+{
+    PDEBUG("[endpoints]  %s()\n",  __func__);
+    /* NOTE: COAP_RSPCODE_CONTENT only works in a packet answering a GET. */
+    return coap_make_response(scratch, outpkt, (const uint8_t *)rsp, strlen(rsp),
+                              id_hi, id_lo, &inpkt->tok, COAP_RSPCODE_CONTENT, COAP_CONTENTTYPE_TEXT_PLAIN);
+}
+////////////////////////////////////////////////////////////////////////////////
 
 static int handle_put_light(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_packet_t *outpkt, uint8_t id_hi, uint8_t id_lo)
 {
@@ -72,6 +84,7 @@ const coap_endpoint_t endpoints[] =
 {
     {COAP_METHOD_GET, handle_get_well_known_core, &path_well_known_core, "ct=40"},
     {COAP_METHOD_GET, handle_get_light, &path_light, "ct=0"},
+    {COAP_METHOD_GET, handle_get_humidity, &path_iop, "ct=0"},
     {COAP_METHOD_PUT, handle_put_light, &path_light, NULL},
     {(coap_method_t)0, NULL, NULL, NULL}
 };
