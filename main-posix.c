@@ -11,7 +11,7 @@
 
 int main(int argc, char **argv)
 {
-    PDEBUG("xoxoxoxoxo\n");
+    PDEBUG("[main-posix] Starting microcoap example...\n");
     int fd;
     struct sockaddr_in servaddr, cliaddr;
     uint8_t buf[4096];
@@ -36,35 +36,34 @@ int main(int argc, char **argv)
 
         n = recvfrom(fd, buf, sizeof(buf), 0, (struct sockaddr *)&cliaddr, &len);
 #ifdef DEBUG
-        printf("Received: ");
+        printf("[main-posix] Received packet: ");
         coap_dump(buf, n, true);
         printf("\n");
 #endif
 
         if (0 != (rc = coap_parse(&pkt, buf, n)))
-            printf("Bad packet rc=%d\n", rc);
+            printf("[main-posix] Bad packet rc=%d\n", rc);
         else
         {
             size_t rsplen = sizeof(buf);
             coap_packet_t rsppkt;
 #ifdef DEBUG
+            printf("[main-posix] content:\n");
             coap_dumpPacket(&pkt);
 #endif
             coap_handle_req(&scratch_buf, &pkt, &rsppkt);
 
             if (0 != (rc = coap_build(buf, &rsplen, &rsppkt)))
-                printf("coap_build failed rc=%d\n", rc);
+                printf("[main-posix] coap_build failed rc=%d\n", rc);
             else
             {
 #ifdef DEBUG
-                printf("Sending: ");
+                printf("[main-posix] Sending packet: ");
                 coap_dump(buf, rsplen, true);
                 printf("\n");
-#endif
-#ifdef DEBUG
+                printf("[main-posix] content:\n");
                 coap_dumpPacket(&rsppkt);
 #endif
-
                 sendto(fd, buf, rsplen, 0, (struct sockaddr *)&cliaddr, sizeof(cliaddr));
             }
         }

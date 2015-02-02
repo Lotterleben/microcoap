@@ -9,6 +9,8 @@ extern "C" {
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "debug.h"
+
 #define MAXOPT 16
 
 // http://tools.ietf.org/html/draft-ietf-core-coap-18#section-3

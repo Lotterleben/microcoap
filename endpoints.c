@@ -20,6 +20,7 @@ void endpoint_setup(void)
 #include <stdio.h>
 void endpoint_setup(void)
 {
+    PDEBUG("[endpoints]  %s()\n",  __func__);
     build_rsp();
 }
 #endif
@@ -27,17 +28,21 @@ void endpoint_setup(void)
 static const coap_endpoint_path_t path_well_known_core = {2, {".well-known", "core"}};
 static int handle_get_well_known_core(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_packet_t *outpkt, uint8_t id_hi, uint8_t id_lo)
 {
+    PDEBUG("[endpoints]  %s()\n",  __func__);
     return coap_make_response(scratch, outpkt, (const uint8_t *)rsp, strlen(rsp), id_hi, id_lo, &inpkt->tok, COAP_RSPCODE_CONTENT, COAP_CONTENTTYPE_APPLICATION_LINKFORMAT);
 }
 
 static const coap_endpoint_path_t path_light = {1, {"light"}};
 static int handle_get_light(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_packet_t *outpkt, uint8_t id_hi, uint8_t id_lo)
 {
+    PDEBUG("[endpoints]  %s()\n",  __func__);
     return coap_make_response(scratch, outpkt, (const uint8_t *)&light, 1, id_hi, id_lo, &inpkt->tok, COAP_RSPCODE_CONTENT, COAP_CONTENTTYPE_TEXT_PLAIN);
 }
 
 static int handle_put_light(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_packet_t *outpkt, uint8_t id_hi, uint8_t id_lo)
 {
+    PDEBUG("[endpoints]  %s()\n",  __func__);
+    
     if (inpkt->payload.len == 0)
         return coap_make_response(scratch, outpkt, NULL, 0, id_hi, id_lo, &inpkt->tok, COAP_RSPCODE_BAD_REQUEST, COAP_CONTENTTYPE_TEXT_PLAIN);
     if (inpkt->payload.p[0] == '1')
@@ -72,6 +77,8 @@ const coap_endpoint_t endpoints[] =
 
 void build_rsp(void)
 {
+    PDEBUG("[endpoints]  %s()\n",  __func__);
+
     uint16_t len = rsplen;
     const coap_endpoint_t *ep = endpoints;
     int i;

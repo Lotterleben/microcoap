@@ -213,6 +213,8 @@ void coap_dumpPacket(coap_packet_t *pkt)
 
 int coap_parse(coap_packet_t *pkt, const uint8_t *buf, size_t buflen)
 {
+    PDEBUG("[coap.c]     %s()\n", __func__);
+
     int rc;
 
     // coap_dump(buf, buflen, false);
@@ -232,6 +234,8 @@ int coap_parse(coap_packet_t *pkt, const uint8_t *buf, size_t buflen)
 // options are always stored consecutively, so can return a block with same option num
 const coap_option_t *coap_findOptions(const coap_packet_t *pkt, uint8_t num, uint8_t *count)
 {
+    PDEBUG("[coap.c]     %s()\n", __func__);
+
     // FIXME, options is always sorted, can find faster than this
     size_t i;
     const coap_option_t *first = NULL;
@@ -255,6 +259,8 @@ const coap_option_t *coap_findOptions(const coap_packet_t *pkt, uint8_t num, uin
 
 int coap_buffer_to_string(char *strbuf, size_t strbuflen, const coap_buffer_t *buf)
 {
+    PDEBUG("[coap.c]     %s()\n", __func__);
+
     if (buf->len+1 > strbuflen)
         return COAP_ERR_BUFFER_TOO_SMALL;
     memcpy(strbuf, buf->p, buf->len);
@@ -264,6 +270,8 @@ int coap_buffer_to_string(char *strbuf, size_t strbuflen, const coap_buffer_t *b
 
 int coap_build(uint8_t *buf, size_t *buflen, const coap_packet_t *pkt)
 {
+    PDEBUG("[coap.c]     %s()\n", __func__);
+
     size_t opts_len = 0;
     size_t i;
     uint8_t *p;
@@ -347,6 +355,7 @@ int coap_build(uint8_t *buf, size_t *buflen, const coap_packet_t *pkt)
 
 void coap_option_nibble(uint32_t value, uint8_t *nibble)
 {
+    PDEBUG("[coap.c]     %s()\n", __func__);
     if (value<13)
     {
         *nibble = (0xFF & value);
@@ -363,6 +372,8 @@ void coap_option_nibble(uint32_t value, uint8_t *nibble)
 
 int coap_make_response(coap_rw_buffer_t *scratch, coap_packet_t *pkt, const uint8_t *content, size_t content_len, uint8_t msgid_hi, uint8_t msgid_lo, const coap_buffer_t* tok, coap_responsecode_t rspcode, coap_content_type_t content_type)
 {
+    PDEBUG("[coap.c]     %s()\n", __func__);
+
     pkt->hdr.ver = 0x01;
     pkt->hdr.t = COAP_TYPE_ACK;
     pkt->hdr.tkl = 0;
@@ -394,6 +405,7 @@ int coap_make_response(coap_rw_buffer_t *scratch, coap_packet_t *pkt, const uint
 // it could more easily return 405 errors
 int coap_handle_req(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_packet_t *outpkt)
 {
+    PDEBUG("[coap.c]     %s()\n", __func__);
     const coap_option_t *opt;
     uint8_t count;
     int i;
