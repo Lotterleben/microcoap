@@ -370,7 +370,11 @@ void coap_option_nibble(uint32_t value, uint8_t *nibble)
     }
 }
 
-int coap_make_response(coap_rw_buffer_t *scratch, coap_packet_t *pkt, const uint8_t *content, size_t content_len, uint8_t msgid_hi, uint8_t msgid_lo, const coap_buffer_t* tok, coap_responsecode_t rspcode, coap_content_type_t content_type)
+int coap_make_response(coap_rw_buffer_t *scratch, coap_packet_t *pkt, 
+                       const uint8_t *content, size_t content_len, 
+                       uint8_t msgid_hi, uint8_t msgid_lo, 
+                       const coap_buffer_t* tok, coap_responsecode_t rspcode, 
+                       coap_content_type_t content_type)
 {
     PDEBUG("[coap.c]     %s()\n", __func__);
 
@@ -411,10 +415,19 @@ int coap_handle_req(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_
     int i;
     const coap_endpoint_t *ep = endpoints;
 
+    /* Iterate through all possible types of endpoints, as defined in 
+     * endpoints.c:endpoints[]. */
     while(NULL != ep->handler)
     {
-        if (ep->method != inpkt->hdr.code)
+        PDEBUG("[coap.c]     endpoint method:%d\n             header code: %d\n",ep->method, inpkt->hdr.code);
+
+        if (ep->method != inpkt->hdr.code) {
+            /* The incoming packet's code header field does not match the method
+             * specified in the endpoint we're currently iterating over.
+             * Continue the search. 
+             * (The code field denotes either the request method or a response code.)*/
             goto next;
+        }
         if (NULL != (opt = coap_findOptions(inpkt, COAP_OPTION_URI_PATH, &count)))
         {
             if (count != ep->path->count)
@@ -427,13 +440,20 @@ int coap_handle_req(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_
                     goto next;
             }
             // match!
+            PDEBUG("[coap.c]     found matching endpoint, calling handler.\n");
             return ep->handler(scratch, inpkt, outpkt, inpkt->hdr.id[0], inpkt->hdr.id[1]);
         }
 next:
         ep++;
     }
 
-    coap_make_response(scratch, outpkt, NULL, 0, inpkt->hdr.id[0], inpkt->hdr.id[1], &inpkt->tok, COAP_RSPCODE_NOT_FOUND, COAP_CONTENTTYPE_NONE);
+    PDEBUG("[coap.c]     no matching endpoint found!\n");
+
+    coap_make_response(scratch, outpkt,
+                        NULL, 0, 
+                        inpkt->hdr.id[0], inpkt->hdr.id[1], 
+                        &inpkt->tok, COAP_RSPCODE_NOT_FOUND, 
+                        COAP_CONTENTTYPE_NONE);
 
     return 0;
 }

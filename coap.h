@@ -137,6 +137,17 @@ typedef struct
     const char *elems[MAX_SEGMENTS];
 } coap_endpoint_path_t;
 
+
+/**
+ * An Endpoint describes:
+ * - a method (i.e. POST, PUT or GET)
+ * - a callback function which handles this type of endpoint (and calls 
+ *   coap_make_response() at some point)
+ * - a path towards a resource (i.e. foo/bar/)
+ * - the 'ct' attribute, as defined in RFC7252, section 7.2.1.:
+ *   "The Content-Format code "ct" attribute provides a hint about the 
+ *   Content-Formats this resource returns." Section 12.3. lists ct values.
+ */
 typedef struct
 {
     coap_method_t method;

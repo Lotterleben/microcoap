@@ -67,6 +67,7 @@ static int handle_put_light(coap_rw_buffer_t *scratch, const coap_packet_t *inpk
     }
 }
 
+/* TODO: was ist mit POST?! */
 const coap_endpoint_t endpoints[] =
 {
     {COAP_METHOD_GET, handle_get_well_known_core, &path_well_known_core, "ct=40"},
