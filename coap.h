@@ -156,8 +156,6 @@ typedef struct
     const char *core_attr;
 } coap_endpoint_t;
 
-
-///////////////////////
 void coap_dumpPacket(coap_packet_t *pkt);
 int coap_parse(coap_packet_t *pkt, const uint8_t *buf, size_t buflen);
 int coap_buffer_to_string(char *strbuf, size_t strbuflen, const coap_buffer_t *buf);
