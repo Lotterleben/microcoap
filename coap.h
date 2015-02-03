@@ -152,7 +152,7 @@ typedef struct
 } coap_endpoint_t;
 
 /**
- * Print the string representation of a CoAP packet.
+ * @brief Print the human readable string representation of a CoAP packet.
  * @param[in] pkt     The packet to print
  */
 void coap_dumpPacket(coap_packet_t *pkt);
@@ -160,6 +160,11 @@ int coap_parse(coap_packet_t *pkt, const uint8_t *buf, size_t buflen);
 int coap_buffer_to_string(char *strbuf, size_t strbuflen, const coap_buffer_t *buf);
 const coap_option_t *coap_findOptions(const coap_packet_t *pkt, uint8_t num, uint8_t *count);
 int coap_build(uint8_t *buf, size_t *buflen, const coap_packet_t *pkt);
+
+/**
+ * @brief Print a CoAP packet in raw form.
+ * @param[in] pkt     The packet to print
+ */
 void coap_dump(const uint8_t *buf, size_t buflen, bool bare);
 
 /**
