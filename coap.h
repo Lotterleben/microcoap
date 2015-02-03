@@ -204,6 +204,14 @@ int coap_make_response(coap_rw_buffer_t *scratch, coap_packet_t *pkt,
  * @param[in] outpkt      Pointer to the packet that should be sent as a response. 
  */
 int coap_handle_req(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_packet_t *outpkt);
+
+/**
+ * @brief Calculate the Option Delta which "is used as the difference between the 
+ *        Option Number of this option and that of the previous option". 
+ *        (see http://tools.ietf.org/html/draft-ietf-core-coap-18#section-3.1?
+ * @param[in] value       TODO
+ * @param[in] nibble      TODO
+ */
 void coap_option_nibble(uint8_t value, uint8_t *nibble);
 void coap_setup(void);
 void endpoint_setup(void);
