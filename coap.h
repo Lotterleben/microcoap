@@ -137,25 +137,24 @@ typedef struct
     const char *elems[MAX_SEGMENTS];
 } coap_endpoint_path_t;
 
-
-/**
- * An Endpoint describes:
- * - a method (i.e. POST, PUT or GET)
- * - a callback function which handles this type of endpoint (and calls 
- *   coap_make_response() at some point)
- * - a path towards a resource (i.e. foo/bar/)
- * - the 'ct' attribute, as defined in RFC7252, section 7.2.1.:
- *   "The Content-Format code "ct" attribute provides a hint about the 
- *   Content-Formats this resource returns." Section 12.3. lists ct values.
- */
 typedef struct
 {
-    coap_method_t method;
-    coap_endpoint_func handler;
-    const coap_endpoint_path_t *path;
-    const char *core_attr;
+    coap_method_t method;               /* (i.e. POST, PUT or GET) */
+    coap_endpoint_func handler;         /* callback function which handles this 
+                                         * type of endpoint (and calls 
+                                         * coap_make_response() at some point) */
+    const coap_endpoint_path_t *path;   /* path towards a resource (i.e. foo/bar/) */ 
+    const char *core_attr;              /* the 'ct' attribute, as defined in RFC7252, section 7.2.1.:
+                                         * "The Content-Format code "ct" attribute 
+                                         * provides a hint about the 
+                                         * Content-Formats this resource returns." 
+                                         * (Section 12.3. lists possible ct values.) */
 } coap_endpoint_t;
 
+/**
+ * Print the string representation of a CoAP packet.
+ * @param[in] pkt     The packet to print
+ */
 void coap_dumpPacket(coap_packet_t *pkt);
 int coap_parse(coap_packet_t *pkt, const uint8_t *buf, size_t buflen);
 int coap_buffer_to_string(char *strbuf, size_t strbuflen, const coap_buffer_t *buf);
@@ -165,10 +164,15 @@ void coap_dump(const uint8_t *buf, size_t buflen, bool bare);
 
 /**
  * @brief Build response message.
- * @param[in] scratch TODO
- * @param[in] id_hi   first element of the header's id array
- * @param[in] id_lo   second element of the header's id array
- * @param[in] tok     the Token used to correlate requestes and responses, maybe? TODO confirm
+ * @param[in] scratch     TODO
+ * @param[in] pkt         TODO
+ * @param[in] content     TODO
+ * @param[in] content_len TODO
+ * @param[in] content_len TODO
+ * @param[in] msgid_hi    first element of the header's id array
+ * @param[in] msgid_lo    second element of the header's id array
+ * @param[in] tok         the Token used to correlate requestes 
+ *                        and responses, maybe? TODO confirm
  * @returns TODO
  */
 int coap_make_response(coap_rw_buffer_t *scratch, coap_packet_t *pkt, 
@@ -177,7 +181,7 @@ int coap_make_response(coap_rw_buffer_t *scratch, coap_packet_t *pkt,
                        const coap_buffer_t* tok, coap_responsecode_t rspcode, 
                        coap_content_type_t content_type);
 int coap_handle_req(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_packet_t *outpkt);
-void coap_option_nibble(uint32_t value, uint8_t *nibble);
+void coap_option_nibble(uint8_t value, uint8_t *nibble);
 void coap_setup(void);
 void endpoint_setup(void);
 

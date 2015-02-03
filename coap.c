@@ -430,13 +430,12 @@ int coap_handle_req(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_
             /* The incoming packet's code header field does not match the method
              * specified in the endpoint we're currently iterating over.
              * Continue the search. 
-             * (The code field denotes either the request method or a response code.)*/
+             * (The code field denotes either the request method or a response code.) */
             goto next;
         }
         /* Since Uri-path options are used to specify the target resource, 
          * check if the incoming packet has any and compare them one by one to
-         * the endpoint's path.
-         */
+         * the endpoint's path. */
         if (NULL != (opt = coap_findOptions(inpkt, COAP_OPTION_URI_PATH, &count)))
         {
             PDEBUG("[coap.c]     packet has %d options.\n", count);
