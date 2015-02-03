@@ -17,7 +17,7 @@ extern "C" {
 typedef struct
 {
     uint8_t ver;            /* CoAP version number */
-    coap_message_type t;    /* CoAP Message Type */
+    coap_msgtype_t t;    /* CoAP Message Type */
     uint8_t tkl;            /* Token length: indicates length of the Token field */
     uint8_t code;           /* CoAP status code. Can be request (0.xx), success reponse (2.xx), 
                              * client error response (4.xx), or rever error response (5.xx) 
