@@ -54,6 +54,7 @@ int coap_parseHeader(coap_header_t *hdr, const uint8_t *buf, size_t buflen)
     return 0;
 }
 
+
 int coap_parseToken(coap_buffer_t *tokbuf, const coap_header_t *hdr, const uint8_t *buf, size_t buflen)
 {
     if (hdr->tkl == 0)

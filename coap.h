@@ -16,10 +16,11 @@ extern "C" {
 // http://tools.ietf.org/html/draft-ietf-core-coap-18#section-3
 typedef struct
 {
-    uint8_t ver;
-    uint8_t t;
-    uint8_t tkl;
-    uint8_t code;
+    uint8_t ver;            /* CoAP version number */
+    coap_message_type t;    /* CoAP Message Type */
+    uint8_t tkl;            /* Token length: indicates length of the Token field */
+    uint8_t code;           /* CoAP status code. Can be request (0.xx), success reponse (2.xx), 
+                             * client error response (4.xx), or rever error response (5.xx) */
     uint8_t id[2];
 } coap_header_t;
 
