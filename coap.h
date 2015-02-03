@@ -159,6 +159,15 @@ void coap_dumpPacket(coap_packet_t *pkt);
 int coap_parse(coap_packet_t *pkt, const uint8_t *buf, size_t buflen);
 int coap_buffer_to_string(char *strbuf, size_t strbuflen, const coap_buffer_t *buf);
 const coap_option_t *coap_findOptions(const coap_packet_t *pkt, uint8_t num, uint8_t *count);
+
+/**
+ * @brief Write coap packet to buffer to make it sendable
+ * @param[in] buf         target buffer to which the packet is written
+ * @param[in] buflen      length of the target buffer
+ * @param[in] pkt         CoAP packet which should be wrirtten to the target buffer
+ *
+ * @returns TODO 
+ */
 int coap_build(uint8_t *buf, size_t *buflen, const coap_packet_t *pkt);
 
 /**
@@ -185,6 +194,15 @@ int coap_make_response(coap_rw_buffer_t *scratch, coap_packet_t *pkt,
                        uint8_t msgid_hi, uint8_t msgid_lo,
                        const coap_buffer_t* tok, coap_responsecode_t rspcode, 
                        coap_content_type_t content_type);
+/**
+ * @brief Handle an incoming CoAP requests according to the rules set by endpoints
+ *        and write the result to outpkt.
+ *        If no matching endpoint is found, a packet with responsecode
+ *        COAP_RSPCODE_NOT_FOUND is built.
+ * @param[in] scratch     TODO
+ * @param[in] inpkt       Pointer to packet to be handled
+ * @param[in] outpkt      Pointer to the packet that should be sent as a response. 
+ */
 int coap_handle_req(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_packet_t *outpkt);
 void coap_option_nibble(uint8_t value, uint8_t *nibble);
 void coap_setup(void);
