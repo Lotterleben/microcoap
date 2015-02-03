@@ -353,6 +353,11 @@ int coap_build(uint8_t *buf, size_t *buflen, const coap_packet_t *pkt)
     return 0;
 }
 
+/**
+ * Calculate the Option Delta which "is used as the difference between the 
+ * Option Number of this option and that of the previous option". 
+ * See http://tools.ietf.org/html/draft-ietf-core-coap-18#section-3.1
+ */
 void coap_option_nibble(uint32_t value, uint8_t *nibble)
 {
     PDEBUG("[coap.c]     %s()\n", __func__);
