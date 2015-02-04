@@ -12,6 +12,7 @@
 int main(int argc, char **argv)
 {
     PDEBUG("[main-posix] Starting microcoap example...\n");
+
     int fd;
     struct sockaddr_in servaddr, cliaddr;
     uint8_t buf[4096];

@@ -1,5 +1,5 @@
 all:
-	clang -Wall -o coap endpoints.c main-posix.c coap.c -DDEBUG -g
+	clang -Wall -o coap endpoints.c microcoap-client.c coap.c -DDEBUG -g
 
 clean:
 	rm -f coap

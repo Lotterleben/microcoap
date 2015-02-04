@@ -13,46 +13,6 @@ extern "C" {
 
 #define MAXOPT 16
 
-// http://tools.ietf.org/html/draft-ietf-core-coap-18#section-3
-typedef struct
-{
-    uint8_t ver;            /* CoAP version number */
-    coap_msgtype_t t;    /* CoAP Message Type */
-    uint8_t tkl;            /* Token length: indicates length of the Token field */
-    uint8_t code;           /* CoAP status code. Can be request (0.xx), success reponse (2.xx), 
-                             * client error response (4.xx), or rever error response (5.xx) 
-                             * For possible values, see http://tools.ietf.org/html/rfc7252#section-12.1 */
-    uint8_t id[2];
-} coap_header_t;
-
-typedef struct
-{
-    const uint8_t *p;
-    size_t len;
-} coap_buffer_t;
-
-typedef struct
-{
-    uint8_t *p;
-    size_t len;
-} coap_rw_buffer_t;
-
-typedef struct
-{
-    uint8_t num;
-    coap_buffer_t buf;
-} coap_option_t;
-
-typedef struct
-{
-    coap_header_t hdr;
-    coap_buffer_t tok;
-    uint8_t numopts;
-    coap_option_t opts[MAXOPT];
-    coap_buffer_t payload;
-} coap_packet_t;
-
-/////////////////////////////////////////
 
 //http://tools.ietf.org/html/draft-ietf-core-coap-18#section-12.2
 typedef enum
@@ -97,6 +57,7 @@ typedef enum
 #define MAKE_RSPCODE(clas, det) ((clas << 5) | (det))
 typedef enum
 {
+    COAP_RSPCODE_GET= MAKE_RSPCODE(0, 1), /* Not a response code, I know, but for the sake of simplicitly.. *looks at deadline* */
     COAP_RSPCODE_CONTENT = MAKE_RSPCODE(2, 5),
     COAP_RSPCODE_NOT_FOUND = MAKE_RSPCODE(4, 4),
     COAP_RSPCODE_BAD_REQUEST = MAKE_RSPCODE(4, 0),
@@ -128,6 +89,47 @@ typedef enum
     COAP_ERR_UNSUPPORTED = 10,
     COAP_ERR_OPTION_DELTA_INVALID = 11,
 } coap_error_t;
+
+///////////////////////
+
+// http://tools.ietf.org/html/draft-ietf-core-coap-18#section-3
+typedef struct
+{
+    uint8_t ver;                /* CoAP version number */
+    coap_msgtype_t t;           /* CoAP Message Type */
+    uint8_t tkl;                /* Token length: indicates length of the Token field */
+    coap_responsecode_t code;   /* CoAP status code. Can be request (0.xx), success reponse (2.xx), 
+                                 * client error response (4.xx), or rever error response (5.xx) 
+                                 * For possible values, see http://tools.ietf.org/html/rfc7252#section-12.1 */
+    uint8_t id[2];
+} coap_header_t;
+
+typedef struct
+{
+    const uint8_t *p;
+    size_t len;
+} coap_buffer_t;
+
+typedef struct
+{
+    uint8_t *p;
+    size_t len;
+} coap_rw_buffer_t;
+
+typedef struct
+{
+    uint8_t num;
+    coap_buffer_t buf;
+} coap_option_t;
+
+typedef struct
+{
+    coap_header_t hdr;
+    coap_buffer_t tok;          /* Token value, size as specified by hdr.tkl */
+    uint8_t numopts;
+    coap_option_t opts[MAXOPT];
+    coap_buffer_t payload;
+} coap_packet_t;
 
 ///////////////////////
 
@@ -214,7 +216,7 @@ int coap_handle_req(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_
  * @param[in] value       TODO
  * @param[in] nibble      TODO
  */
-void coap_option_nibble(uint8_t value, uint8_t *nibble);
+void coap_option_nibble(uint32_t value, uint8_t *nibble);
 void coap_setup(void);
 void endpoint_setup(void);
 
