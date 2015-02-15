@@ -9,46 +9,10 @@ extern "C" {
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "debug.h"
+
 #define MAXOPT 16
 
-// http://tools.ietf.org/html/draft-ietf-core-coap-18#section-3
-typedef struct
-{
-    uint8_t ver;
-    uint8_t t;
-    uint8_t tkl;
-    uint8_t code;
-    uint8_t id[2];
-} coap_header_t;
-
-typedef struct
-{
-    const uint8_t *p;
-    size_t len;
-} coap_buffer_t;
-
-typedef struct
-{
-    uint8_t *p;
-    size_t len;
-} coap_rw_buffer_t;
-
-typedef struct
-{
-    uint8_t num;
-    coap_buffer_t buf;
-} coap_option_t;
-
-typedef struct
-{
-    coap_header_t hdr;
-    coap_buffer_t tok;
-    uint8_t numopts;
-    coap_option_t opts[MAXOPT];
-    coap_buffer_t payload;
-} coap_packet_t;
-
-/////////////////////////////////////////
 
 //http://tools.ietf.org/html/draft-ietf-core-coap-18#section-12.2
 typedef enum
@@ -93,6 +57,7 @@ typedef enum
 #define MAKE_RSPCODE(clas, det) ((clas << 5) | (det))
 typedef enum
 {
+    COAP_RSPCODE_GET= MAKE_RSPCODE(0, 1), /* Not a response code, I know, but for the sake of simplicitly.. *looks at deadline* */
     COAP_RSPCODE_CONTENT = MAKE_RSPCODE(2, 5),
     COAP_RSPCODE_NOT_FOUND = MAKE_RSPCODE(4, 4),
     COAP_RSPCODE_BAD_REQUEST = MAKE_RSPCODE(4, 0),
@@ -127,6 +92,47 @@ typedef enum
 
 ///////////////////////
 
+// http://tools.ietf.org/html/draft-ietf-core-coap-18#section-3
+typedef struct
+{
+    uint8_t ver;                /* CoAP version number */
+    coap_msgtype_t t;           /* CoAP Message Type */
+    uint8_t tkl;                /* Token length: indicates length of the Token field */
+    coap_responsecode_t code;   /* CoAP status code. Can be request (0.xx), success reponse (2.xx), 
+                                 * client error response (4.xx), or rever error response (5.xx) 
+                                 * For possible values, see http://tools.ietf.org/html/rfc7252#section-12.1 */
+    uint8_t id[2];
+} coap_header_t;
+
+typedef struct
+{
+    const uint8_t *p;
+    size_t len;
+} coap_buffer_t;
+
+typedef struct
+{
+    uint8_t *p;
+    size_t len;
+} coap_rw_buffer_t;
+
+typedef struct
+{
+    uint8_t num;
+    coap_buffer_t buf;
+} coap_option_t;
+
+typedef struct
+{
+    coap_header_t hdr;
+    coap_buffer_t tok;          /* Token value, size as specified by hdr.tkl */
+    uint8_t numopts;
+    coap_option_t opts[MAXOPT];
+    coap_buffer_t payload;
+} coap_packet_t;
+
+///////////////////////
+
 typedef int (*coap_endpoint_func)(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_packet_t *outpkt, uint8_t id_hi, uint8_t id_lo);
 #define MAX_SEGMENTS 2  // 2 = /foo/bar, 3 = /foo/bar/baz
 typedef struct
@@ -137,22 +143,79 @@ typedef struct
 
 typedef struct
 {
-    coap_method_t method;
-    coap_endpoint_func handler;
-    const coap_endpoint_path_t *path;
-    const char *core_attr;
+    coap_method_t method;               /* (i.e. POST, PUT or GET) */
+    coap_endpoint_func handler;         /* callback function which handles this 
+                                         * type of endpoint (and calls 
+                                         * coap_make_response() at some point) */
+    const coap_endpoint_path_t *path;   /* path towards a resource (i.e. foo/bar/) */ 
+    const char *core_attr;              /* the 'ct' attribute, as defined in RFC7252, section 7.2.1.:
+                                         * "The Content-Format code "ct" attribute 
+                                         * provides a hint about the 
+                                         * Content-Formats this resource returns." 
+                                         * (Section 12.3. lists possible ct values.) */
 } coap_endpoint_t;
 
-
-///////////////////////
+/**
+ * @brief Print the human readable string representation of a CoAP packet.
+ * @param[in] pkt     The packet to print
+ */
 void coap_dumpPacket(coap_packet_t *pkt);
 int coap_parse(coap_packet_t *pkt, const uint8_t *buf, size_t buflen);
 int coap_buffer_to_string(char *strbuf, size_t strbuflen, const coap_buffer_t *buf);
 const coap_option_t *coap_findOptions(const coap_packet_t *pkt, uint8_t num, uint8_t *count);
+
+/**
+ * @brief Write coap packet to buffer to make it sendable
+ * @param[in] buf         target buffer to which the packet is written
+ * @param[in] buflen      length of the target buffer
+ * @param[in] pkt         CoAP packet which should be wrirtten to the target buffer
+ *
+ * @returns TODO 
+ */
 int coap_build(uint8_t *buf, size_t *buflen, const coap_packet_t *pkt);
+
+/**
+ * @brief Print a CoAP packet in raw form.
+ * @param[in] pkt     The packet to print
+ */
 void coap_dump(const uint8_t *buf, size_t buflen, bool bare);
-int coap_make_response(coap_rw_buffer_t *scratch, coap_packet_t *pkt, const uint8_t *content, size_t content_len, uint8_t msgid_hi, uint8_t msgid_lo, const coap_buffer_t* tok, coap_responsecode_t rspcode, coap_content_type_t content_type);
+
+/**
+ * @brief Build response message.
+ * @param[in] scratch     TODO
+ * @param[in] pkt         TODO
+ * @param[in] content     TODO
+ * @param[in] content_len TODO
+ * @param[in] content_len TODO
+ * @param[in] msgid_hi    first element of the header's id array
+ * @param[in] msgid_lo    second element of the header's id array
+ * @param[in] tok         the Token used to correlate requestes 
+ *                        and responses, maybe? TODO confirm
+ * @returns TODO
+ */
+int coap_make_response(coap_rw_buffer_t *scratch, coap_packet_t *pkt, 
+                       const uint8_t *content, size_t content_len,
+                       uint8_t msgid_hi, uint8_t msgid_lo,
+                       const coap_buffer_t* tok, coap_responsecode_t rspcode, 
+                       coap_content_type_t content_type);
+/**
+ * @brief Handle an incoming CoAP requests according to the rules set by endpoints
+ *        and write the result to outpkt.
+ *        If no matching endpoint is found, a packet with responsecode
+ *        COAP_RSPCODE_NOT_FOUND is built.
+ * @param[in] scratch     TODO
+ * @param[in] inpkt       Pointer to packet to be handled
+ * @param[in] outpkt      Pointer to the packet that should be sent as a response. 
+ */
 int coap_handle_req(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_packet_t *outpkt);
+
+/**
+ * @brief Calculate the Option Delta which "is used as the difference between the 
+ *        Option Number of this option and that of the previous option". 
+ *        (see http://tools.ietf.org/html/draft-ietf-core-coap-18#section-3.1?
+ * @param[in] value       TODO
+ * @param[in] nibble      TODO
+ */
 void coap_option_nibble(uint32_t value, uint8_t *nibble);
 void coap_setup(void);
 void endpoint_setup(void);
