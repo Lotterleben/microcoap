@@ -20,7 +20,11 @@
 #include "coap_ext.h"
 
 // TODO: use rw_buf?
-int coap_ext_build_PUT(uint8_t* buf, size_t buflen, char* payload, coap_endpoint_path_t* path)
+/*
+Build a PUT request.
+The value of buflen will be the request packet's size after successful completion. 
+*/
+int coap_ext_build_PUT(uint8_t* buf, size_t* buflen, char* payload, coap_endpoint_path_t* path)
 {
     /* 
      * Note: the resource URI is coded as an option! -> COAP_OPTION_URI_PATH
@@ -75,7 +79,7 @@ int coap_ext_build_PUT(uint8_t* buf, size_t buflen, char* payload, coap_endpoint
     coap_dumpPacket(&req_pkt);
 #endif
     // try to  write packet to send buffer
-    if (0 != (errcode = coap_build(buf, &req_pkt_sz, &req_pkt))) {
+    if (0 != (errcode = coap_build(buf, buflen, &req_pkt))) {
         printf("Error building packet! Error code: %i\nAborting. \n", errcode);
         return -1;
     }
