@@ -1,4 +1,4 @@
-CFLAGS += -Wall -DDEBUG
+CFLAGS += -Wall -DDEBUG -std=c99
 SRC = $(wildcard *.c)
 OBJ = $(SRC:%.c=%.o)
 DEPS = $(SRC:%.c=%.d)

@@ -10,6 +10,8 @@
 
 int main(int argc, char **argv)
 {
+    printf("setting up example server...\n");
+
     int fd;
     struct sockaddr_in servaddr, cliaddr;
     uint8_t buf[4096];
@@ -23,8 +25,6 @@ int main(int argc, char **argv)
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
     servaddr.sin_port = htons(PORT);
     bind(fd,(struct sockaddr *)&servaddr, sizeof(servaddr));
-
-    endpoint_setup();
 
     while(1)
     {
