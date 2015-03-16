@@ -60,7 +60,7 @@ int coap_ext_build_PUT(uint8_t* buf, size_t* buflen, char* payload, coap_endpoin
     for (int i=0; i < segment_count; i++ ) {
         coap_option_t path_option = {
             .num = COAP_OPTION_URI_PATH,
-            .buf = {.p = (const uint8_t *) &path->elems[i],
+            .buf = {.p = (const uint8_t *) path->elems[i],
                     .len = strlen(path->elems[i])}
         };
 
@@ -69,7 +69,7 @@ int coap_ext_build_PUT(uint8_t* buf, size_t* buflen, char* payload, coap_endpoin
 
     req_pkt_sz = sizeof(req_pkt);
 
-    if (buflen < req_pkt_sz) {
+    if (*buflen < req_pkt_sz) {
         printf("Error: buflen too small:\n\tbuflen:%zd\n\treq_pkt_sz:%zd\n", buflen, req_pkt_sz);
         return -1;
     }
